@@ -114,16 +114,6 @@ module.exports = function plot(gd, plotinfo, cdimage, imageLayer) {
             return canvas;
         }
 
-        var href;
-        if(!trace._isZEmpty) {
-            var canvas = drawMagnifiedPixelOnCanvas();
-            href = canvas.toDataURL('image/png');
-        } else if(!trace._isSourceEmpty) {
-            href = trace.source;
-            // imageHeight = trace.h;
-            // imageWidth = trace.w;
-        }
-
         var image3 = plotGroup.selectAll('image')
             .data(cd);
 
@@ -131,6 +121,25 @@ module.exports = function plot(gd, plotinfo, cdimage, imageLayer) {
             xmlns: xmlnsNamespaces.svg,
             preserveAspectRatio: 'none'
         });
+
+        var canvas, href;
+        if(!trace._isZEmpty) {
+            canvas = drawMagnifiedPixelOnCanvas();
+            href = canvas.toDataURL('image/png');
+        } else if(!trace._isSourceEmpty) {
+            href = trace.source;
+
+            // Transfer image to a canvas for reading pixel colors in hover routine
+            trace._canvas = trace._canvas || document.createElement('canvas');
+            canvas = trace._canvas;
+            canvas.width = w;
+            canvas.height = h;
+            var context = canvas.getContext('2d');
+            var image = image3.node();
+            image.onload = function() {
+                context.drawImage(image, 0, 0);
+            };
+        }
 
         image3.attr({
             height: imageHeight,

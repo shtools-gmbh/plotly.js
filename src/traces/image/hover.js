@@ -18,8 +18,6 @@ module.exports = function hoverPoints(pointData, xval, yval) {
     var xa = pointData.xa;
     var ya = pointData.ya;
 
-    return;
-
     // Return early if not on image
     if(Fx.inbox(xval - cd0.x0, xval - (cd0.x0 + cd0.w * trace.dx), 0) > 0 ||
             Fx.inbox(yval - cd0.y0, yval - (cd0.y0 + cd0.h * trace.dy), 0) > 0) {
@@ -30,8 +28,17 @@ module.exports = function hoverPoints(pointData, xval, yval) {
     var nx = Math.floor((xval - cd0.x0) / trace.dx);
     var ny = Math.floor(Math.abs(yval - cd0.y0) / trace.dy);
 
+    var c, pixel;
+    if(!trace._isZEmpty) {
+        pixel = cd0.z[ny][nx];
+        c = pixel;
+    } else if(!trace._isSourceEmpty) {
+        pixel = trace._canvas.getContext('2d').getImageData(nx, ny, 1, 1).data;
+        c = trace._scaler(pixel);
+    }
+
     // return early if pixel is undefined
-    if(!cd0.z[ny][nx]) return;
+    if(!pixel) return;
 
     var hoverinfo = cd0.hi || trace.hoverinfo;
     var fmtColor;
@@ -43,7 +50,6 @@ module.exports = function hoverPoints(pointData, xval, yval) {
 
     var colormodel = trace.colormodel;
     var dims = colormodel.length;
-    var c = trace._scaler(cd0.z[ny][nx]);
     var s = constants.colormodel[colormodel].suffix;
 
     var colorstring = [];
@@ -66,7 +72,7 @@ module.exports = function hoverPoints(pointData, xval, yval) {
     var py = ya.c2p(cd0.y0 + (ny + 0.5) * trace.dy);
     var xVal = cd0.x0 + (nx + 0.5) * trace.dx;
     var yVal = cd0.y0 + (ny + 0.5) * trace.dy;
-    var zLabel = '[' + cd0.z[ny][nx].slice(0, trace.colormodel.length).join(', ') + ']';
+    var zLabel = '[' + pixel.slice(0, trace.colormodel.length).join(', ') + ']';
     return [Lib.extendFlat(pointData, {
         index: [ny, nx],
         x0: xa.c2p(cd0.x0 + nx * trace.dx),
