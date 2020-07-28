@@ -8,8 +8,8 @@
 
 'use strict';
 
-var d3 = require('d3');
 var utcFormat = require('d3-time-format').utcFormat;
+var numberFormat = require('d3-format').format;
 var isNumeric = require('fast-isnumeric');
 
 var numConstants = require('../constants/numerical');
@@ -1078,7 +1078,7 @@ function templateFormatString(string, labels, d3locale) {
         if(format) {
             var fmt;
             if(format[0] === ':') {
-                fmt = d3locale ? d3locale.numberFormat : d3.format;
+                fmt = d3locale ? d3locale.numberFormat : numberFormat;
                 value = fmt(format.replace(TEMPLATE_STRING_FORMAT_SEPARATOR, ''))(value);
             }
 
