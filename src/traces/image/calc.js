@@ -24,7 +24,7 @@ module.exports = function calc(gd, trace) {
         h = trace.z.length;
         w = maxRowLength(trace.z);
     } else if(!trace._isSourceEmpty) {
-        var size = getImageSize(trace.source)
+        var size = getImageSize(trace.source);
         h = size.height;
         w = size.width;
     }

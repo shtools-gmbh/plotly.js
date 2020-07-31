@@ -31,10 +31,10 @@ module.exports = function hoverPoints(pointData, xval, yval) {
     var c, pixel;
     if(!trace._isZEmpty) {
         pixel = cd0.z[ny][nx];
-        c = pixel;
+        c = trace._scaler(pixel);
     } else if(!trace._isSourceEmpty) {
         pixel = trace._canvas.getContext('2d').getImageData(nx, ny, 1, 1).data;
-        c = trace._scaler(pixel);
+        c = pixel;
     }
 
     // return early if pixel is undefined

@@ -21,6 +21,7 @@ module.exports = function plot(gd, plotinfo, cdimage, imageLayer) {
         var plotGroup = d3.select(this);
         var cd0 = cd[0];
         var trace = cd0.trace;
+        var fastImage = false;
 
         var z = cd0.z;
         var x0 = cd0.x0;
@@ -65,22 +66,25 @@ module.exports = function plot(gd, plotinfo, cdimage, imageLayer) {
             bottom = temp;
         }
 
-        // // Reduce image size when zoomed in to save memory
-        // var extra = 0.5; // half the axis size
-        // left = Math.max(-extra * xa._length, left);
-        // right = Math.min((1 + extra) * xa._length, right);
-        // top = Math.max(-extra * ya._length, top);
-        // bottom = Math.min((1 + extra) * ya._length, bottom);
+        // Reduce image size when zoomed in to save memory
+        if(!fastImage) {
+            var extra = 0.5; // half the axis size
+            left = Math.max(-extra * xa._length, left);
+            right = Math.min((1 + extra) * xa._length, right);
+            top = Math.max(-extra * ya._length, top);
+            bottom = Math.min((1 + extra) * ya._length, bottom);
+        }
+
         var imageWidth = Math.round(right - left);
         var imageHeight = Math.round(bottom - top);
 
-        // // if image is entirely off-screen, don't even draw it
-        // var isOffScreen = (imageWidth <= 0 || imageHeight <= 0);
-        // if(isOffScreen) {
-        //     var noImage = plotGroup.selectAll('image').data([]);
-        //     noImage.exit().remove();
-        //     return;
-        // }
+        // if image is entirely off-screen, don't even draw it
+        var isOffScreen = (imageWidth <= 0 || imageHeight <= 0);
+        if(isOffScreen) {
+            var noImage = plotGroup.selectAll('image').data([]);
+            noImage.exit().remove();
+            return;
+        }
 
         // Create a new canvas and draw magnified pixel on it
         function drawMagnifiedPixelOnCanvas() {
